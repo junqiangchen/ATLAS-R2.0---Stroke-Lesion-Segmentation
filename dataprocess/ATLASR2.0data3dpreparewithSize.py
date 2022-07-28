@@ -7,7 +7,8 @@ from dataprocess.utils import file_name_path, resize_image_itkwithsize, normaliz
 
 image_dir = "Image"
 mask_dir = "Mask"
-
+image_pre = "_T1w.nii.gz"
+mask_pre = "_label-L_desc-T1lesion_mask.nii.gz"
 
 def preparesampling3dtraindata(datapath, trainImage, trainMask, shape=(96, 96, 96)):
     newSize = shape
@@ -15,12 +16,12 @@ def preparesampling3dtraindata(datapath, trainImage, trainMask, shape=(96, 96, 9
     dataMaskpath = datapath + "/" + mask_dir
     all_files = file_name_path(dataImagepath, False, True)
     for subsetindex in range(len(all_files)):
-        mask_name = all_files[subsetindex]
-        mask_gt_file = dataMaskpath + "/" + mask_name
-        masksegsitk = sitk.ReadImage(mask_gt_file)
         image_name = all_files[subsetindex]
         image_gt_file = dataImagepath + "/" + image_name
         imagesitk = sitk.ReadImage(image_gt_file)
+        mask_name = all_files[subsetindex][:-len(image_pre)] + mask_pre
+        mask_gt_file = dataMaskpath + "/" + mask_name
+        masksegsitk = sitk.ReadImage(mask_gt_file)
 
         _, resizeimage = resize_image_itkwithsize(imagesitk, newSize, imagesitk.GetSize(),
                                                   sitk.sitkLinear)
